@@ -194,7 +194,7 @@ def get_best_score_by_FC_loss(server_result):
 
 
 #======================================================================================================
-# PSO 
+#FedPSO
 class particle():
     def __init__(self, client_id, client_net, Agent_trainloader, Agent_cross_trainloader, FC_trainloader, ACC, LOCAL_ACC, GLOBAL_ACC):
         self.client_id = client_id
@@ -243,10 +243,12 @@ class particle():
                                                                       - step_weight[layer])
             self.velocities[i] = new_v
             new_weight[i] = step_weight[layer] + self.velocities[i]
-            step_model.state_dict()[layer].copy_(new_weight[i])            
+            step_model.state_dict()[layer].copy_(new_weight[i])          
+            ######SGD #######
         self.client_net, train_loss_own_data, lr_new = basic_client_update(self.client_id, step_model, 
                                                                            self.Agent_trainloader, epochnum, 
                                                                            lr, gamma)
+        
         Agent_cross_data_accuracy = cal_test_accuracy(self.FC_trainloader, self.client_net)
         train_score_loss_with_agent_cross_data = 1 - Agent_cross_data_accuracy
         if self.local_best_score > train_score_loss_with_agent_cross_data:
